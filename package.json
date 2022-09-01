@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "dns-zonefile": "^0.3.0",
     "mongodb": "^4.8.1",
     "next": "latest",
     "react": "^18.2.0",
@@ -15,5 +16,6 @@
     "@types/node": "18.7.5",
     "@types/react": "16.9.17",
     "typescript": "4.6.3"
-  }
+  },
+  "type": "module"
 }
