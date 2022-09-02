@@ -58,7 +58,7 @@ console.log(result)
   return result;
 }
 
-console.log(`Test One: ${websiteLinter("https://www.northammergames.com")}`);
+//console.log(`Test One: ${websiteLinter("https://www.northammergames.com")}`);
 //console.log(`Test Two: ${websiteLinter("http://www.northammergames.com")}`);
 //console.log(`Test Three: ${websiteLinter("www.northammergames.com")}`);
 //console.log(`Test Four: ${websiteLinter("northammergames.com")}`);
