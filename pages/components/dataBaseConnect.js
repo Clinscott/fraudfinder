@@ -1,6 +1,6 @@
 import clientPromise from "../../lib/mongodb";
 
-export default async function dataBaseConnect(newItem) {
+export default async function dataBaseConnect(website, hash) {
     const c = await clientPromise;
     if (!c) {
         console.log("Not Connected in newItem.js");
@@ -9,11 +9,11 @@ export default async function dataBaseConnect(newItem) {
       }
   try {
       await createItem(c, {
-        website: newItem
+        [website]: hash
     });
   } finally {
     //await c.close();
-    console.log("Disconnected in newItem.js");
+    //console.log("Disconnected in newItem.js");
   }
 }
 
