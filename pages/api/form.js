@@ -3,6 +3,9 @@ import clientPromise from "../../lib/mongodb.ts";
 import dataBaseConnect from "../components/dataBaseConnect";
 import websiteLinter from "../components/websiteLinter";
 import toHash from "../components/toHash";
+import hashDBSearch from "../components/hashDBSearch";
+import pullFoundWebsiteID from "../components/pullFoundWebsiteID";
+
 
 export default async function handler(req, res){
   // Get data submitted in request's body.
@@ -21,13 +24,20 @@ export default async function handler(req, res){
   }
     // Found the website.
     // Sends a HTTP success code
-    res.status(200).json({ data: `${body.website}` })
+    res.status(200).json({ data: `${body.website}` });
     // lints website removing http... and zone for searching
-    const website = websiteLinter(body.website)
+    const website = websiteLinter(body.website);
     // hashes searched website to match against parsed data. Searching for hashes which point to
     // the location of the searched website. Why. Because I wanted to learn how to.
-    const hashedWebsite = await toHash(website.site)
+    const hashedWebsite = await toHash(website.site);
+    //searched Database for associated website and hash. This will be created from a function that
+    //iterates through the zonefiles assigning domain, hash and ID of domain to be pulled.
+    //returns ID of domain to be pulled from associated DB.
+    const hashCheck = await hashDBSearch(website.site, hashedWebsite);
+    //after finding ID we want to find the zoneFile for the webite with the associated ID.
+    const domainFound = await pullFoundWebsiteID(hashCheck);
+    return domainFound
 
-    dataBaseConnect(website.site, hashedWebsite);
+    //dataBaseConnect(website.site, hashedWebsite);
 
 }
