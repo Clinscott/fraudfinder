@@ -8,7 +8,7 @@ export default async function hashDBSearch(website, hash) {
         console.log(`Connected to Database`)
       }
   try {
-      await findWebsite(c, {
+      await findWebsiteID(c, {
         [website]: hash
     });
   } finally {
