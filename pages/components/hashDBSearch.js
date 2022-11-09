@@ -1,37 +1,35 @@
 import clientPromise from "../../lib/mongodb";
 
 export default async function hashDBSearch(website, hash) {
-    const c = await clientPromise;
-    if (!c) {
-        console.log("Not Connected in newItem.js");
-      }else{
-        console.log(`Connected to Database`)
-      }
+  const dataBaseIndex = website[0].toUpperCase();
+  const c = await clientPromise;
+  if (!c) {
+    console.log("Not Connected in newItem.js");
+  } else {
+    console.log(`Connected to Database`);
+  }
   try {
-      await findWebsiteID(c, {
-        [website]: hash
+    await findWebsiteID(c, dataBaseIndex, {
+      hash: hash,
     });
-  } finally {
-    //await c.close();
-    //console.log("Disconnected in newItem.js");
+  } catch (err) {
+    console.error(err);
   }
 }
 
-async function findWebsiteID(c, website) {
+async function findWebsiteID(c, index, hash, zone) {
   const result = await c
-    .db("fraudFinder")
-    .collection("websiteSearched")
-    .find(website);
-  console.log(
-    `Website: ${website.website} found with correct hash: ${result.hash}`
-  );
-  if(!result){
-    return console.log`${website.website} not found in zonefileDB.`
-  }else{
+    .db(`fraudFinder${zone}`)
+    .collection(`websiteHash${index}`)
+    .find(hash);
+  console.log(`Hash: ${hash} Found with correct hash: ${result.hash}`);
+  if (!result) {
+    console.log`${hash} not found in ZoneFile Database.`;
+  } else {
     const websiteReturnID = {
-        domain: result.website,
-        id: result._id
-    }
-    return websiteReturnID
-  } 
+      domain: result.website,
+      id: result._id,
+    };
+    return websiteReturnID;
+  }
 }
