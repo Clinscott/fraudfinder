@@ -25,8 +25,10 @@ export default async function handler(req, res){
     // Found the website.
     // Sends a HTTP success code
     res.status(200).json({ data: `${body.website}` });
+
     // lints website removing http... and zone for searching
     const website = websiteLinter(body.website);
+    
     // hashes searched website to match against parsed data. Searching for hashes which point to
     // the location of the searched website. Why. Because I wanted to learn how to.
     const hashedWebsite = await toHash(website.site);
