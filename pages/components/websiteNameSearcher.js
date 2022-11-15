@@ -46,7 +46,7 @@ function addShop(str){
   return str + '-shop';
 }
 //change o to 0's: northammergames => n0rthammergames
-
+test
 //change i to l
 //change l to i
 //double small letters i, l, o, j: ie, northammergames => noorthammergames
