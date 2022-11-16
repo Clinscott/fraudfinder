@@ -18,8 +18,13 @@ export default async function websiteNameSearcher(str) {
   if (websiteArrayCount === 10) {
     websiteArray.forEach((w) => {
       //run different changes
-      //post array to database stored under searched website
+      //check each entry if registered in general database
+      //if in registered database store as registered, else store as unregistered
+      //post arrays to database stored under searched website as either reg or unreg
+
       //reduce array and count to 0
+      websiteArray.length = 0;
+      websiteArrayCount = 0;
     });
   }
   changeWebsite(str);
@@ -105,9 +110,29 @@ function doubleSmall(website) {
   return websiteArray.push(alt);
 }
 //add e to end: ie. northammergames => northammergamese
+function addE(website) {
+  const alt = website + "e";
+  websiteArrayCount++;
+  return websiteArray.push(alt);
+}
 //add s to end: ie. northammergames => northammergamess
+function addS(website) {
+  const alt = website + "s";
+  websiteArrayCount++;
+  return websiteArray.push(alt);
+}
 //add - starting after first index untill second last index: ie. northammergames => n-orthammergames / no-rthammergames / nor-thammergames
+function addDash(website) {
+  for (let index = 1; index < website.length; index++) {
+    const alt = website;
+    const altArray = alt.split("");
+    altArray.splice(index, 0, '-');
+    const siteDashJoin = altArray.join('');
+    websiteArray.push(siteDashJoin);
+  }
+}
 //add another - from str from above function where no - before or after: ie. northammergames => n-o-rthammergames etc...
+
 //perform each prev variation on subsequent variations
 
 function changeWebsite(str) {
@@ -122,6 +147,9 @@ function changeWebsite(str) {
   changeOtoZero(website);
   changeItoL(website);
   changeLtoI(website);
+  addE(website);
+  addS(website);
+  addDash(website);
 }
 
 websiteNameSearcher("northammergames");
