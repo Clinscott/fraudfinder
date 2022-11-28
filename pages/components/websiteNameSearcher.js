@@ -12,29 +12,29 @@ import toHash from "./toHash.js";
 const websiteArray = new Array();
 let websiteArrayCount = 0;
 
-
 export default async function websiteNameSearcher(str) {
   //check if str has been searched before. if not then go nuts.
   //otherwise return already created variables and perform WHOIS.
   //once collected store all found variations in new database associated with search str.
 
   //registered alt array
-
   const regAltArray = new Array();
+  let regAltArrayCount = 0;
   //unregistered alt array
   const unregAltArray = new Array();
+  let unregAltArrayCount = 0;
+  let websiteID;
 
   //run different changes
   try {
     const websiteHash = await toHash(str);
     console.log(websiteHash);
-    const websiteID = await hashDBSearch(str, websiteHash);
+    websiteID = await hashDBSearch(str, websiteHash);
   } catch (err) {
-    if(err){
-      console.error(err)
+    if (err) {
+      console.error(err);
     }
   }
-
 
   changeWebsite(str);
 
@@ -46,28 +46,38 @@ export default async function websiteNameSearcher(str) {
       const altHash = await toHash(w);
       const altCheck = await hashDBSearch(w, altHash);
       if (altCheck == null) {
-        console.log(`alt: ${w} unreg`)
+        console.log(`alt: ${w} unreg`);
+        unregAltArrayCount++;
         return unregAltArray.push(w);
       } else {
-        console.log(`alt: ${w} reg`)
-        return regAltArray.push(w);
+        console.log(`alt: ${w} reg`);
+        regAltArrayCount++;
+        const regW = { domain: altCheck.domain, id: altCheck.id };
+        return regAltArray.push(regW);
       }
     } catch (err) {
-      if(err){
-        console.error(err)
+      if (err) {
+        console.error(err);
       }
     }
 
-    //store website with searched websites in db under new database.
+    //store website with searched websites in db under new database. NOT ENOUGH DATABASE STORAGE IN MONGODBATLAS
   });
+
   const searchedWebsite = {
     website: websiteID.domain,
     originID: websiteID.id,
+    websiteAlts: websiteArrayCount,
     registeredAlts: regAltArray,
-    unregisteredAlts: unregAltArray,
+    registeredAltsNumber: regAltArrayCount,
+    unRegisteredAlts: unregAltArray,
+    unRegisteredAltsNumber: unregAltArrayCount,
   };
-}
 
+  return console.log(JSON.stringify(searchedWebsite));
+
+  // return searchedWebsite;
+}
 //should each of these be their own function? Most likely yes.
 //variation functions go below here!
 
@@ -290,4 +300,4 @@ function changeWebsite(str) {
   addMoreDash(websiteArray);
 }
 
-websiteNameSearcher("w-5");
+websiteNameSearcher("x");

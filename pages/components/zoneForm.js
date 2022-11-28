@@ -33,7 +33,8 @@ export default function ZoneForm() {
     // Get the response data from server as JSON.
     // If server returns the name submitted, that means the form works.
     const result = await response.json();
-    alert(`Is this the website: ${result.data}`);
+    console.log(result)
+    //we have it returning data so far.
   };
   return (
     // We pass the event to the handleSubmit() function on submit.
