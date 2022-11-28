@@ -1,3 +1,5 @@
+import hashDBSearch from "./hashDBSearch.js";
+import toHash from "./toHash.js";
 //domain name can include:
 //1 - 63 characters long
 //a-z, 0-9
@@ -15,22 +17,67 @@ export default async function websiteNameSearcher(str) {
   //otherwise return already created variables and perform WHOIS.
   //once collected store all found variations in new database associated with search str.
 
-  if (websiteArrayCount === 10) {
-    websiteArray.forEach((w) => {
-      //run different changes
-      //check each entry if registered in general database
-      //if in registered database store as registered, else store as unregistered
-      //post arrays to database stored under searched website as either reg or unreg
+  //registered alt array
+  const regAltArray = new Array();
+  let regAltArrayCount = 0;
+  //unregistered alt array
+  const unregAltArray = new Array();
+  let unregAltArrayCount = 0;
+  let websiteID;
 
-      //reduce array and count to 0
-      websiteArray.length = 0;
-      websiteArrayCount = 0;
-    });
+  //run different changes
+  try {
+    const websiteHash = await toHash(str);
+    console.log(websiteHash);
+    websiteID = await hashDBSearch(str, websiteHash);
+  } catch (err) {
+    if (err) {
+      console.error(err);
+    }
   }
-  changeWebsite(str);
-  console.log(websiteArray);
-}
 
+  changeWebsite(str);
+
+  //check each entry if registered in general database
+  //if not in registered database store in unregistered array, else store in registered array.
+  websiteArray.forEach(async (w) => {
+    // console.log(`website alt: ${w}`);
+    try {
+      const altHash = await toHash(w);
+      const altCheck = await hashDBSearch(w, altHash);
+      if (altCheck == null) {
+        console.log(`alt: ${w} unreg`);
+        unregAltArrayCount++;
+        return unregAltArray.push(w);
+      } else {
+        console.log(`alt: ${w} reg`);
+        regAltArrayCount++;
+        const regW = { domain: altCheck.domain, id: altCheck.id };
+        return regAltArray.push(regW);
+      }
+    } catch (err) {
+      if (err) {
+        console.error(err);
+      }
+    }
+
+    //store website with searched websites in db under new database. NOT ENOUGH DATABASE STORAGE IN MONGODBATLAS
+  });
+
+  const searchedWebsite = {
+    website: websiteID.domain,
+    originID: websiteID.id,
+    websiteAlts: websiteArrayCount,
+    registeredAlts: regAltArray,
+    registeredAltsNumber: regAltArrayCount,
+    unRegisteredAlts: unregAltArray,
+    unRegisteredAltsNumber: unregAltArrayCount,
+  };
+
+  return console.log(JSON.stringify(searchedWebsite));
+
+  // return searchedWebsite;
+}
 //should each of these be their own function? Most likely yes.
 //variation functions go below here!
 
@@ -105,9 +152,48 @@ function changeLtoI(website) {
 }
 //double small letters i, l, o, j: ie, northammergames => noorthammergames
 function doubleSmall(website) {
-  const alt = website.replace();
-  websiteArrayCount++;
-  return websiteArray.push(alt);
+  const alt = website;
+  const altArray = alt.split("");
+  let siteJoin;
+  for (let index = 0; index < altArray.length; index++) {
+    const element = altArray[index];
+    switch (element) {
+      case "i":
+        altArray[index] = "ii";
+        siteJoin = altArray.join("");
+        websiteArray.push(siteJoin);
+        websiteArrayCount++;
+
+        break;
+      case "e":
+        altArray[index] = "ee";
+        siteJoin = altArray.join("");
+        websiteArray.push(siteJoin);
+        websiteArrayCount++;
+
+        break;
+      case "l":
+        altArray[index] = "ll";
+        siteJoin = altArray.join("");
+        websiteArray.push(siteJoin);
+        websiteArrayCount++;
+
+        break;
+      case "j":
+        altArray[index] = "jj";
+        siteJoin = altArray.join("");
+        websiteArray.push(siteJoin);
+        websiteArrayCount++;
+
+        break;
+      case "h":
+        altArray[index] = "hh";
+        siteJoin = altArray.join("");
+        websiteArray.push(siteJoin);
+        websiteArrayCount++;
+    }
+  }
+  return;
 }
 //add e to end: ie. northammergames => northammergamese
 function addE(website) {
@@ -126,14 +212,73 @@ function addDash(website) {
   for (let index = 1; index < website.length; index++) {
     const alt = website;
     const altArray = alt.split("");
-    altArray.splice(index, 0, '-');
-    const siteDashJoin = altArray.join('');
+    altArray.splice(index, 0, "-");
+    const siteDashJoin = altArray.join("");
     websiteArray.push(siteDashJoin);
+    websiteArrayCount++;
   }
+  return;
 }
-//add another - from str from above function where no - before or after: ie. northammergames => n-o-rthammergames etc...
+//errant keystrokes and mispellings
+//[ie=>ei][oo=>o][]
+function missTyped(arr) {
+  arr.forEach((element) => {
+    if (element.includes("ie")) {
+      const alt = element.replace("ie", "ei");
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+    if (element.includes("o")) {
+      const alt = element.replace("o", "oo");
 
-//perform each prev variation on subsequent variations
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+    if (element.includes("tt")) {
+      const alt = element.replace("tt", "t");
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+    if (element.includes("c")) {
+      const alt = element.replace("c", "cc");
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+    if (element.includes("rr")) {
+      const alt = element.replace("rr", "r");
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+    if (element.includes("mm")) {
+      const alt = element.replace("mm", "m");
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+    if (element.includes("ss")) {
+      const alt = element.replace("ss", "s");
+      arr.push(alt);
+      websiteArrayCount++;
+    }
+  });
+}
+//add another - from str from websiteArray where no - before or after: ie. northammergames => n-o-rthammergames etc...
+function addMoreDash(arr) {
+  arr.forEach((element) => {
+    for (let index = 1; index < element.length; index++) {
+      const current = element[index];
+      const prev = element[index - 1];
+      const next = element[index + 1];
+      const alt = element;
+      const altArray = alt.split("");
+      if (current != "-" && prev != "-" && next != "-") {
+        altArray.splice(index, 0, "-");
+        const siteDashJoin = altArray.join("");
+        arr.push(siteDashJoin);
+        websiteArrayCount++;
+      }
+    }
+  });
+}
 
 function changeWebsite(str) {
   const website = str;
@@ -147,9 +292,12 @@ function changeWebsite(str) {
   changeOtoZero(website);
   changeItoL(website);
   changeLtoI(website);
+  doubleSmall(website);
   addE(website);
   addS(website);
   addDash(website);
+  missTyped(websiteArray);
+  addMoreDash(websiteArray);
 }
 
-websiteNameSearcher("northammergames");
+websiteNameSearcher("x");
