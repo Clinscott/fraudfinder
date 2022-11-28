@@ -40,8 +40,32 @@ export default async function websiteNameSearcher(str) {
 
   //check each entry if registered in general database
   //if not in registered database store in unregistered array, else store in registered array.
-  websiteArray.forEach(async (w) => {
-    // console.log(`website alt: ${w}`);
+  // websiteArray.forEach(async (w) => {
+  //   // console.log(`website alt: ${w}`);
+  //   try {
+  //     const altHash = await toHash(w);
+  //     const altCheck = await hashDBSearch(w, altHash);
+  //     if (altCheck == null) {
+  //       console.log(`alt: ${w} unreg`);
+  //       unregAltArrayCount++;
+  //       return unregAltArray.push(w);
+  //     } else {
+  //       console.log(`alt: ${w} reg`);
+  //       regAltArrayCount++;
+  //       const regW = { domain: altCheck.domain, id: altCheck.id };
+  //       return regAltArray.push(regW);
+  //     }
+  //   } catch (err) {
+  //     if (err) {
+  //       console.error(err);
+  //     }
+  //   }
+
+  //   //store website with searched websites in db under new database. NOT ENOUGH DATABASE STORAGE IN MONGODBATLAS
+  // });
+  
+  await Promise.all(websiteArray.map(async (w)=>{
+     console.log(`website alt: ${w}`);
     try {
       const altHash = await toHash(w);
       const altCheck = await hashDBSearch(w, altHash);
@@ -60,9 +84,7 @@ export default async function websiteNameSearcher(str) {
         console.error(err);
       }
     }
-
-    //store website with searched websites in db under new database. NOT ENOUGH DATABASE STORAGE IN MONGODBATLAS
-  });
+  }))
 
   const searchedWebsite = {
     website: websiteID.domain,
