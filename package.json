@@ -8,9 +8,12 @@
   "dependencies": {
     "dns-zonefile": "^0.3.0",
     "mongodb": "^4.9.1",
+    "net": "^1.0.2",
     "next": "^12.3.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-table": "^7.8.0",
+    "whois-json": "^2.0.4"
   },
   "devDependencies": {
     "@types/node": "^18.7.5",

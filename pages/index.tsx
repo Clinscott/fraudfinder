@@ -1,11 +1,11 @@
-import Head from 'next/head';
-import clientPromise from '../lib/mongodb.js';
-import { InferGetServerSidePropsType } from 'next';
-import ZoneForm from './components/zoneForm';
+import Head from "next/head";
+import clientPromise from "../lib/mongodb.js";
+import { InferGetServerSidePropsType } from "next";
+import ZoneForm from "./components/zoneForm";
 
 export async function getServerSideProps(context) {
   try {
-    await clientPromise
+    await clientPromise;
     // `await clientPromise` will use the default database passed in the MONGODB_URI
     // However you can use another database (e.g. myDatabase) by replacing the `await clientPromise` with the following code:
     //
@@ -17,12 +17,12 @@ export async function getServerSideProps(context) {
 
     return {
       props: { isConnected: true },
-    }
+    };
   } catch (e) {
-    console.error(e)
+    console.error(e);
     return {
       props: { isConnected: false },
-    }
+    };
   }
 }
 
@@ -30,9 +30,9 @@ export default function Home({
   isConnected,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <div className="container">
+    <div className="main">
       <Head>
-      <title>Fraud ZoneFile Finder</title>
+        <title>ORG FraudFinder</title>
         <meta
           name="description"
           content="Generated with create next app and developed by Craig Linscott."
@@ -41,23 +41,22 @@ export default function Home({
       </Head>
 
       <main>
-        <h1 className="title">
-        Fraud ZoneFile Finder
-        </h1>
+        <h1 className="title">ORG FraudFinder</h1>
 
-        {isConnected ? (
-          console.log('You are connected to MongoDB')
-        ) : (
-          console.log('You are NOT connected to MongoDB')
-
-        )}
+        {isConnected
+          ? console.log("You are connected to MongoDB")
+          : console.log("You are NOT connected to MongoDB")}
 
         <p className="description">
-        Get started by inputting the name of your website.
+          Get started by inputting the name of your website.
+        </p>
+        <p className="a">
+          Fraud Finder will take your website and scour the web for sites
+          looking to exploit your good name.
         </p>
 
-        <div className="grid">
-        <ZoneForm />
+        <div className="">
+          <ZoneForm />
         </div>
       </main>
 
@@ -67,7 +66,7 @@ export default function Home({
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
       </footer>
@@ -199,6 +198,8 @@ export default function Home({
           height: 1em;
         }
 
+        
+
         @media (max-width: 600px) {
           .grid {
             width: 100%;
@@ -216,11 +217,50 @@ export default function Home({
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
         }
+        .center {
+          margin: auto;
+          width: 50%;
+          border: 3px solid green ;
+          padding: 10px;
+        }
 
         * {
           box-sizing: border-box;
         }
+        .styled-table {
+          border-collapse: collapse;
+          margin: 25px 0;
+          font-size: 0.9em;
+          font-family: sans-serif;
+          min-width: 400px;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .styled-table thead tr {
+          background-color: #009879;
+          color: #ffffff;
+          text-align: left;
+        }
+        .styled-table th,
+        .styled-table td {
+          padding: 12px 15px;
+        }
+        .styled-table tbody tr {
+          border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+          background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+          border-bottom: 2px solid #009879;
+        }
+        .styled-table tbody tr.active-row {
+          font-weight: bold;
+          color: #009879;
+        }
       `}</style>
     </div>
-  )
+  );
 }

@@ -1,11 +1,7 @@
-import { mainModule } from "process";
-import clientPromise from "../../lib/mongodb.js";
-import dataBaseConnect from "../components/dataBaseConnect";
-import websiteLinter from "../components/websiteLinter";
-import toHash from "../components/toHash";
-import hashDBSearch from "../components/hashDBSearch";
-import pullFoundWebsiteID from "../components/pullFoundWebsiteID";
-import websiteNameSearcher from "../components/websiteNameSearcher";
+import websiteLinter from "../components/websiteLinter.js";
+import websiteNameSearcher from "../components/websiteNameSearcher.js";
+import whoDis from "../components/whoDis.js";
+import testData from "../components/data.js";
 
 export default async function handler(req, res) {
   // Get data submitted in request's body.
@@ -35,7 +31,9 @@ export default async function handler(req, res) {
 
   //generates alternates of website and searches DB for any that match.
   //returns object containing array of unreg and reg alts as well as OG search site.
-  const generateWebsites = await websiteNameSearcher(website.site);
-const generatedWebsitesJSON = JSON.stringify(generateWebsites);
-  return res.status(200).json(generatedWebsitesJSON);
+  body.generateWebsites = await websiteNameSearcher(website.site);
+  // body.generateWebsites.whoDis = await whoDis(testData.registeredAlts, '.org'); //need to have dom as well as name
+  console.log("api FORM WebsitePreJSON");
+  console.log(body.generateWebsites);
+  res.status(200).json({data: body.generateWebsites});
 }

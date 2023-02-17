@@ -63,43 +63,61 @@ export default async function websiteNameSearcher(str) {
 
   //   //store website with searched websites in db under new database. NOT ENOUGH DATABASE STORAGE IN MONGODBATLAS
   // });
+
+  await Promise.all(
+    websiteArray.map(async (w) => {
+      console.log(`website alt: ${w}`);
+      try {
+        const altHash = await toHash(w);
+        const altCheck = await hashDBSearch(w, altHash);
+        if (altCheck == null) {
+          console.log(`alt: ${w} unreg`);
+          unregAltArrayCount++;
+          return unregAltArray.push(w);
+        } else {
+          console.log(`alt: ${w} reg`);
+          regAltArrayCount++;
+          const regW = { domain: altCheck.domain, id: altCheck.id };
+          return regAltArray.push(regW);
+        }
+      } catch (err) {
+        if (err) {
+          console.error(err);
+        }
+      }
+    })
+  );
+
+  let result;
   
-  await Promise.all(websiteArray.map(async (w)=>{
-     console.log(`website alt: ${w}`);
-    try {
-      const altHash = await toHash(w);
-      const altCheck = await hashDBSearch(w, altHash);
-      if (altCheck == null) {
-        console.log(`alt: ${w} unreg`);
-        unregAltArrayCount++;
-        return unregAltArray.push(w);
-      } else {
-        console.log(`alt: ${w} reg`);
-        regAltArrayCount++;
-        const regW = { domain: altCheck.domain, id: altCheck.id };
-        return regAltArray.push(regW);
-      }
-    } catch (err) {
-      if (err) {
-        console.error(err);
-      }
-    }
-  }))
+  if (websiteID === null) {
+    const nullSearchedWebsite = {
+      website: `Website: ${str} does not exist.`,
+      websiteAlts: websiteArrayCount,
+      registeredAlts: regAltArray,
+      registeredAltsNumber: regAltArrayCount,
+      unRegisteredAlts: unregAltArray,
+      unRegisteredAltsNumber: unregAltArrayCount,
+    };
+    result = JSON.stringify(nullSearchedWebsite);
+  } else {
+    const searchedWebsite = {
+      website: websiteID.domain,
+      originID: websiteID.id,
+      websiteAlts: websiteArrayCount,
+      registeredAlts: regAltArray,
+      registeredAltsNumber: regAltArrayCount,
+      unRegisteredAlts: unregAltArray,
+      unRegisteredAltsNumber: unregAltArrayCount,
+    };
+    result = JSON.stringify(searchedWebsite);
+  }
 
-  const searchedWebsite = {
-    website: websiteID.domain,
-    originID: websiteID.id,
-    websiteAlts: websiteArrayCount,
-    registeredAlts: regAltArray,
-    registeredAltsNumber: regAltArrayCount,
-    unRegisteredAlts: unregAltArray,
-    unRegisteredAltsNumber: unregAltArrayCount,
-  };
+  //  console.log(result);
 
-  return console.log(JSON.stringify(searchedWebsite));
-
-  // return searchedWebsite;
+  return result;
 }
+
 //should each of these be their own function? Most likely yes.
 //variation functions go below here!
 
@@ -322,4 +340,4 @@ function changeWebsite(str) {
   addMoreDash(websiteArray);
 }
 
-websiteNameSearcher("x");
+// websiteNameSearcher("test");
